@@ -1,16 +1,47 @@
 const { Dog, Temperament } = require("../../db.js");
+const { getDgs, getTemps } = require("../functions");
 
-const getDogs = () => {
+const getDogs = async (req) => {
   // >Obtiene un arreglo de objetos, donde cada objeto es la raza de un perro.
+
+  const { name } = req.query;
+  try {
+    const allCans = await getDgs();
+    if (name) {
+      const cans = allCans.filter(
+        (can) => can.name.toUpperCase() === name.toUpperCase()
+      );
+      if (cans.length > 0) return res.json(cans);
+      res.status(404).send({ message: "Can Not Found" });
+    } else {
+      res.status(200).json(allCans);
+    }
+  } catch (error) {
+    res.send(error);
+  }
 };
-const getDetailByRace = () => {
+const getDetailByRace = async (req, res) => {
   // >Esta ruta Obtiene el detalle de una raza específica.
   // Es decir que devuelve un objeto con la información
   // pedida en el detalle de un perro.
   // >La raza es recibida por parámetro (ID).
   // >Tiene que incluir los datos de los temperamentos asociadas a esta raza.
   // >Debe funcionar tanto para los perros de la API como para los de la base de datos.
+  const { idRace } = req.params;
+
+  try {
+    if (idRace) {
+      const allDogs = await getDogs();
+      const filteredDogsByRace = allDogs.filter((can) => can.id == idRace);
+      if (filteredDogsByRace.length) return res.json(filteredDogsByRace);
+
+      res.stats(400).send("Dog/Race NOT Found");
+    }
+  } catch (error) {
+    res.send(error);
+  }
 };
+
 const getCoincidencesByQuery = () => {
   // >Esta ruta debe obtener todas aquellas razas de perros
   //  que coinciden con el nombre recibido por query.
@@ -37,9 +68,9 @@ const getTemperaments = () => {
 };
 
 module.exports = {
-    getDogs,
-    getDetailByRace,
-    getCoincidencesByQuery,
-    postDog,
-    getTemperaments
-}
+  getDogs,
+  getDetailByRace,
+  getCoincidencesByQuery,
+  postDog,
+  getTemperaments,
+};

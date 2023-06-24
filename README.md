@@ -97,7 +97,6 @@ La idea de este proyecto es construir una aplicación web a partir de la API [**
 -  **Search By 'Raza':** _"https://api.thedogapi.com/v1/breeds/search?q={raza_perro}"_
 
 <br />
-
 ---
 
 <div align="center">
@@ -141,7 +140,6 @@ Para esta parte deberás construir un servidor utilizando **NodeJS** y **Express
 Tu servidor deberá contar con las siguientes rutas:
 
 #### **📍 GET | /dogs**
-
 -  Obtiene un arreglo de objetos, donde cada objeto es la raza de un perro.
 
 #### **📍 GET | /dogs/:idRaza**
