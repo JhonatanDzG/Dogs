@@ -3,7 +3,7 @@ const Dog = require("./Dog");
 const Temperament = require("./Temperament");
 
 const db = new Sequelize(
-  "Dogs",
+  "dogs",
   "postgres",
   "JhonatanDzG117",
   {
@@ -13,9 +13,9 @@ const db = new Sequelize(
   { timestamps: false }
 );
 
-db.sync({ force: false })
+db.sync({ force: true })
   .then(() => {
-    console.log("Models-DataBase Synchronized Successfully");
+    console.log("Models-DataBase Synchronized Successfully ✅");
   })
   .catch((error) => {
     console.log("Error: Models-DataBase NO Synchronized 🚫");

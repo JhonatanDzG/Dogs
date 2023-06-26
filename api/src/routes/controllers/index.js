@@ -1,7 +1,7 @@
 const { Dog, Temperament } = require("../../db.js");
 const { getDgs, getTemps } = require("../functions");
 
-const getDogs = async (req) => {
+const getDogs = async (req, res) => {
   // >Obtiene un arreglo de objetos, donde cada objeto es la raza de un perro.
 
   const { name } = req.query;

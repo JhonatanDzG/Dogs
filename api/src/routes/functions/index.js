@@ -3,6 +3,7 @@ const { API_KEY } = process.env;
 const URL = "https://thedogapi.com/";
 
 const getDgs = async () => {
+  
   const apiDogs = await axios(`${URL}${API_KEY}`);
 
   const dogs = apiDogs.data.map((dog) => ({
@@ -17,6 +18,7 @@ const getDgs = async () => {
 
   return dogs;
 };
+
 const getTemps = async () => {
   let dogs = await _getCans();
   let temps = dogs
