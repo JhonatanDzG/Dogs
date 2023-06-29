@@ -25,12 +25,19 @@ fs.readdirSync(path.join(__dirname, "/models"))
     modelDefiners.push(require(path.join(__dirname, "/models", file)));
   });
 
-// console.log(
-//   "Los archivos de la carpeta Models Han sido: Leídos, Requeridos y Agregados al array modelDefiners"
-// );
+// console.log("01>> " + modelDefiners);
+
+// console.log(">> modelDefiners CREATED");
 
 // Injectamos la conexion (sequelize) a todos los modelos
-// >descomentar< // modelDefiners.forEach((model) => model(sequelize));
+
+modelDefiners.forEach((model) => model(sequelize));
+
+// console.log("03>> " + modelDefiners);
+
+// Dog(sequelize);
+// Temperament(sequelize);
+
 // Capitalizamos los nombres de los modelos ie: product => Product
 let entries = Object.entries(sequelize.models);
 let capsEntries = entries.map((entry) => [
@@ -46,14 +53,14 @@ const { Dog, Temperament } = sequelize.models;
 // Aca vendrian las relaciones
 // Product.hasMany(Reviews);
 
-// Dog.belongsToMany(Temperament, {
-//   timestamps: false,
-// });
-// Temperament.belongsToMany(Dog, {
-//   timestamps: false,
-// });
+
+  Dog.belongsToMany(Temperament, { through: "DogTemps", timestamps: false });
+  Temperament.belongsToMany(Dog, { through: "DogTemps", timestamps: false });
+  // console.log("Models-DataBase Synchronized Successfully ✅");
+
 
 module.exports = {
+  sequelize,
   ...sequelize.models, // para poder importar los modelos así: const { Product, User } = require('./db.js');
   conn: sequelize, // para importart la conexión { conn } = require('./db.js');
 };

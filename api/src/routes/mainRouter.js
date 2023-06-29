@@ -5,7 +5,8 @@ const {
   getCoincidencesByQuery,
   postDog,
   getTemperaments,
-} = require("./controllers/index");
+} = require("../controllers/index");
+
 // Importar todos los routers;
 // Ejemplo: const authRouter = require('./auth.js');
 
