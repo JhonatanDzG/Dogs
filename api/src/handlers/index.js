@@ -1,8 +1,9 @@
 const axios = require("axios");
 const { API_KEY } = process.env;
+const { Dog, Temperament } = require('../db.js');
 const URL = "https://api.thedogapi.com/v1/breeds?api_key=";
 
-const getDgs = async () => {
+const getDogsHandler = async () => {
   const apiDogs = await axios(`${URL}${API_KEY}`);
 
   const dogs = apiDogs.data.map((dog) => ({
@@ -19,10 +20,10 @@ const getDgs = async () => {
   return dogs;
 };
 
-const breed_groupHandler = async () => {
+const breed_groupHandler = async (res) => {
   const apiDogs = await axios(`${URL}${API_KEY}`);
   const dogs = apiDogs.data.map((dog) => ({
-    breed_group: dog.breed_group,
+    breed_group: dog.breed_group
   }));
   try {
     const breedGroupList = dogs.filter(
@@ -30,15 +31,14 @@ const breed_groupHandler = async () => {
         Object.keys(dog).length !== 0 &&
         Object.values(dog).every((value) => value !== "" && value !== undefined)
     );
-    return breedGroupList;
+    res.status(202).json(breedGroupList);
   } catch (error) {
-    console.log("falló");
+    res.status(405).send(error);
   }
-  console.log(dogs);
 };
 
 const getTemps = async () => {
-  let dogs = await getDgs();
+  let dogs = await getDogsHandler();
   let temps = dogs
     .filter((dog) => dog.temps)
     .map((dog) => dog.temps.split(", "));
@@ -49,14 +49,14 @@ const getTemps = async () => {
 };
 const _getFullCans = async () => {
   try {
-      const Cans = await getDgs();
+      const Cans = await getDogsHandler();
       return [...Cans];
   } catch (error) {
       console.log(error)
   }
 }
 
-const _getMyCans = async () => {
+const getDatabaseDogs = async () => {
   try {
       return await Dog.findAll({
           include: Temperament
@@ -67,9 +67,9 @@ const _getMyCans = async () => {
 }
 
 module.exports = {
-  getDgs,
+  getDogsHandler,
   getTemps,
   breed_groupHandler,
   _getFullCans,
-  _getMyCans
+  getDatabaseDogs,
 };

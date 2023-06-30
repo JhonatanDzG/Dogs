@@ -5,6 +5,7 @@ const {
   getCoincidencesByQuery,
   postDog,
   getTemperaments,
+  getDataBase,
 } = require("../controllers/index");
 
 // Importar todos los routers;
@@ -20,6 +21,7 @@ router
   .get("/dogs/:idRaza", getDetailByRace)
   .get("/dogs/name?='...'", getCoincidencesByQuery)
   .post("/dog", postDog)
-  .get("/temperament", getTemperaments);
+  .get("/temperament", getTemperaments)
+  .get("/dogs/data/db", getDataBase)
 
 module.exports = router;

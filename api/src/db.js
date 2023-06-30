@@ -26,7 +26,6 @@ fs.readdirSync(path.join(__dirname, "/models"))
   });
 
 // console.log("01>> " + modelDefiners);
-
 // console.log(">> modelDefiners CREATED");
 
 // Injectamos la conexion (sequelize) a todos los modelos
@@ -56,7 +55,7 @@ const { Dog, Temperament } = sequelize.models;
 
   Dog.belongsToMany(Temperament, { through: "DogTemps", timestamps: false });
   Temperament.belongsToMany(Dog, { through: "DogTemps", timestamps: false });
-  // console.log("Models-DataBase Synchronized Successfully ✅");
+  // console.lowg("Models-DataBase Synchronized Successfully ✅");
 
 
 module.exports = {

@@ -1,16 +1,15 @@
-const { Temperament } = require("../db.js");
+const { Dog, Temperament } = require("../db.js");
 const {
-  getDgs,
+  getDogsHandler,
   getTemps,
-  _getMyCans,
-  breed_groupHandler,
+  getDatabaseDogs,
   _getFullCans,
 } = require("../handlers/index.js");
 
 const getDogs = async (req, res) => {
   const { name: breed_group } = req.query;
   try {
-    const allDogs = await breed_groupHandler();
+    const allDogs = await getDogsHandler();
     if (breed_group) {
       const dogs = allDogs.filter(
         (dog) => dog.breed_group.toUpperCase() === breed_group.toUpperCase()
@@ -34,14 +33,19 @@ const getDetailByRace = async (req, res) => {
   // >Debe funcionar tanto para los perros de la API como para los de la base de datos.
   const { idRaza } = req.params;
   try {
-    if (idRaza) {
+    if (isNaN(idRaza)) {
       const allCans = await _getFullCans();
-      const cans = allCans.filter((can) => can.breed_group === idRaza);
-      if (cans.length) return res.json(cans);
-      res.stats(404).send("Can is lost");
+      const cans = allCans.filter((can) => can.breed_group == idRaza);
+      if (cans.length) {
+        res.status(222).send(cans);
+      } else {
+        res.stats(404).send("Dog is lost 😼");
+      }
+    } else {
+      res.status(201).send(`Buscar en DB id: ${idRaza}`);
     }
   } catch (error) {
-    res.send(error);
+    res.status(405).send(error);
   }
 };
 
@@ -66,36 +70,46 @@ const getCoincidencesByQuery = async (req, res) => {
     console.log(error);
   }
 };
-const postDog = async(req, res) => {
-  // >Esta ruta recibirá todos los datos necesarios para crear
-  //   un nuevo perro y relacionarlo con los temperamentos asociados.
-  // >Toda la información debe ser recibida por body.
-  // >Debe crear la raza de perro en la base de datos,
-  //   y esta debe estar relacionada con los temperamentos indicados
-  //  (al menos uno).
-
-    let {name, image, minHeight, maxHeight, minWeight, maxWeight, life_span, temperaments} = req.body
-    let height = `${minHeight} - ${maxHeight}`
-    let weight = `${minWeight} - ${maxWeight}`
-    console.log(req.body)
-    try {
-        const myCans = await _getMyCans();
-        existCan = myCans.filter(can => can.name.toLowerCase() === name.toLowerCase())
-        if(existCan.length===0){
-            const can =  await Dog.create({name,image, height, weight, life_span})
-            for(let temp of temperaments){
-                can.addTemps(await Temperament.findOne({where: {name: temp}}) )
-            }
-            res.json({can, message: 'El perro es de los nuestros'})
-        }else{
-            res.json({message: 'Ya esta con nosotros'})
-        }
-    } catch (error) {
-        res.send(error);
+const postDog = async (req, res) => {
+  let {
+    name,
+    picture,
+    minHeight,
+    maxHeight,
+    minWeight,
+    maxWeight,
+    yearsOfLife: life_span,
+    temps,
+  } = req.body;
+  let height = `${minHeight} - ${maxHeight}`;
+  let weight = `${minWeight} - ${maxWeight}`;
+  console.log(req.body);
+  try {
+    const dogsDB = await getDatabaseDogs();
+    let existDog = dogsDB.filter(
+      (dog) => dog.name.toLowerCase() === name.toLowerCase()
+    );
+    if (existDog.length === 0) {
+      const dog = await Dog.create({
+        name,
+        picture,
+        height,
+        weight,
+        life_span,
+      });
+      for (let temp of temps) {
+        dog.addTemps(await Temperament.findOne({ where: { name: temp } }));
+      }
+      res.json({ can: dog, message: "El perro es de los nuestros" });
+    } else {
+      res.json({ message: "Ya esta con nosotros" });
     }
+  } catch (error) {
+    res.send(error);
+  }
 };
 
-const getTemperaments = async (req, res) => {
+const getTemperaments = async (res) => {
   // >Obtiene todos los temperamentos existentes.
   // >Estos deben ser obtenidos de la API
   // (se evaluará que no haya hardcodeo).
@@ -117,10 +131,19 @@ const getTemperaments = async (req, res) => {
   }
 };
 
+const getDataBase = async (res) => {
+  try {
+    const temps = await getDatabaseDogs();
+    res.send(temps);
+  } catch (error) {
+    res.send(error);
+  }
+};
 module.exports = {
-  getDogs: getDogs,
-  getDetailByRace: getDetailByRace,
-  getCoincidencesByQuery: getCoincidencesByQuery,
-  postDog: postDog,
-  getTemperaments: getTemperaments,
+  getDogs,
+  getDetailByRace,
+  getCoincidencesByQuery,
+  postDog,
+  getTemperaments,
+  getDataBase,
 };
