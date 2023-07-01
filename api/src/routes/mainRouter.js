@@ -21,7 +21,8 @@ router
   .get("/dogs/:idRaza", getDetailByRace)
   .get("/dogs/name?='...'", getCoincidencesByQuery)
   .post("/dog", postDog)
-  .get("/temperament", getTemperaments)
-  .get("/dogs/data/db", getDataBase)
+  .get("/temperaments", getTemperaments)
+  .get("/db", getDataBase)
+  .get("/@a", )
 
 module.exports = router;

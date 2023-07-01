@@ -19,7 +19,7 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      race: {
+      breed_group: {
         type: DataTypes.STRING,
         allowNull: false,
       },
