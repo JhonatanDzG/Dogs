@@ -62,16 +62,17 @@ const getCoincidencesByQuery = async (req, res) => {
 };
 
 //* CODING...
-const postDog = async (req, res) => {
+const createPostDog = async (req, res) => {
   let {
     name,
-    breed_group,
     image,
+    breed_group,
     minHeight,
     maxHeight,
     minWeight,
     maxWeight,
     life_span,
+    temperament,
   } = req.body;
   let height = `${minHeight} - ${maxHeight}`;
   let weight = `${minWeight} - ${maxWeight}`;
@@ -82,23 +83,24 @@ const postDog = async (req, res) => {
       (dog) => dog.name.toLowerCase() === name.toLowerCase()
     );
     if (existDog.length === 0) {
-      const dog = await Dog.create({
+      const newPost = await Dog.create({
         name,
         breed_group,
         image,
+        temperament,
         height,
         weight,
         life_span,
       });
       for (let temp of temperament) {
-        dog.addTemps(await Temperament.findOne({ where: { name: temp } }));
+        newPost.addTemps(await Temperament.findOne({ where: { name: temp } }));
       }
-      res.json({ can: dog, message: "El perro es de los nuestros" });
+      res.json({ can: newPost, message: "El perro es de los nuestros" });
     } else {
       res.json({ message: "Ya esta con nosotros" });
     }
   } catch (error) {
-    res.send(error);
+    res.status(444).send(error);
   }
 };
 
@@ -106,15 +108,13 @@ const postDog = async (req, res) => {
 const getTemperaments = async (req, res) => {
   const temps = await getTempsHandler();
   try {
- 
     for (let temp of temps) {
       await Temperament.findOrCreate({ where: { name: temp } });
     }
-
+ 
     const _temps = await Temperament.findAll();
 
     res.status(201).json(_temps);
-
   } catch (error) {
     res.status(404).send(error);
   }
@@ -130,12 +130,11 @@ const getDataBase = async (req, res) => {
   }
 };
 
-
 module.exports = {
   getDogs,
   getDetailByRace,
   getCoincidencesByQuery,
-  postDog,
+  createPostDog,
   getTemperaments,
   getDataBase,
 };

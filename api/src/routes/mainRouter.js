@@ -3,7 +3,7 @@ const {
   getDogs,
   getDetailByRace,
   getCoincidencesByQuery,
-  postDog,
+  createPostDog,
   getTemperaments,
   getDataBase,
 } = require("../controllers/index");
@@ -20,9 +20,9 @@ router
   .get("/dogs", getDogs)
   .get("/dogs/:idRaza", getDetailByRace)
   .get("/dogs/name?='...'", getCoincidencesByQuery)
-  .post("/dog", postDog)
   .get("/temperaments", getTemperaments)
-  .get("/db", getDataBase)
+  .post("/dog", createPostDog)
   .get("/@a", )
+  .get("/db", getDataBase)
 
 module.exports = router;
