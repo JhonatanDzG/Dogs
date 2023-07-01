@@ -11,7 +11,7 @@ const getDogsHandler = async () => {
     name: dog.name,
     breed_group: dog.breed_group,
     image: dog.image.url,
-    temperaments: dog.temperament,
+    temperament: dog.temperament,
     weight: dog.weight.metric,
     height: dog.height.metric,
     life_span: dog.life_span,
@@ -37,26 +37,23 @@ const breed_groupHandler = async (res) => {
   }
 };
 
-const getTemps = async () => {
+const getTempsHandler = async () => {
   let dogs = await getDogsHandler();
-  let temps = dogs
-    .filter((dog) => dog.temps)
-    .map((dog) => dog.temps.split(", "));
-
-  temps = new Set(temps.flat());
-
+  let temps = (dogs.filter(dog => dog.temperament)).map((dog=>(dog.temperament.split(', '))))
+  temps = new Set(temps.flat())
   return temps;
 };
+
 const _getFullCans = async () => {
   try {
-      const Cans = await getDogsHandler();
-      return [...Cans];
+      const dogs = await getDogsHandler();
+      return [...dogs];
   } catch (error) {
       console.log(error)
   }
 }
 
-const getDatabaseDogs = async () => {
+const getDataBaseDogsHandler = async () => {
   try {
       return await Dog.findAll({
           include: Temperament
@@ -66,10 +63,12 @@ const getDatabaseDogs = async () => {
   }
 }
 
+
+
 module.exports = {
   getDogsHandler,
-  getTemps,
+  getTempsHandler ,
   breed_groupHandler,
   _getFullCans,
-  getDatabaseDogs,
+  getDataBaseDogsHandler,
 };

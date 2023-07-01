@@ -1,9 +1,9 @@
-const { Dog, Temperament } = require("../db.js");
+const { Dog, Temperament } = require("../db");
 const {
   getDogsHandler,
-  getTemps,
-  getDatabaseDogs,
+  getTempsHandler,
   _getFullCans,
+  getDataBaseDogsHandler,
 } = require("../handlers/index.js");
 
 const getDogs = async (req, res) => {
@@ -24,13 +24,8 @@ const getDogs = async (req, res) => {
   }
 };
 
+//* COMPLETED
 const getDetailByRace = async (req, res) => {
-  // >Esta ruta Obtiene el detalle de una raza específica.
-  // Es decir que devuelve un objeto con la información
-  // pedida en el detalle de un perro.
-  // >La raza es recibida por parámetro (ID).
-  // >Tiene que incluir los datos de los temperamentos asociadas a esta raza.
-  // >Debe funcionar tanto para los perros de la API como para los de la base de datos.
   const { idRaza } = req.params;
   try {
     if (isNaN(idRaza)) {
@@ -49,13 +44,8 @@ const getDetailByRace = async (req, res) => {
   }
 };
 
+//* INCOMPLETE
 const getCoincidencesByQuery = async (req, res) => {
-  // >Esta ruta debe obtener todas aquellas razas de perros
-  //  que coinciden con el nombre recibido por query.
-  // (No es necesario que sea una coincidencia exacta).
-  // >Debe poder buscarlo independientemente de mayúsculas o minúsculas.
-  // >Si no existe la raza, debe mostrar un mensaje adecuado.
-  // >Debe buscar tanto los de la API como los de la base de datos
   const { name } = req.query;
 
   try {
@@ -70,34 +60,37 @@ const getCoincidencesByQuery = async (req, res) => {
     console.log(error);
   }
 };
+
+//* CODING...
 const postDog = async (req, res) => {
   let {
     name,
-    picture,
+    breed_group,
+    image,
     minHeight,
     maxHeight,
     minWeight,
     maxWeight,
-    yearsOfLife: life_span,
-    temps,
+    life_span,
   } = req.body;
   let height = `${minHeight} - ${maxHeight}`;
   let weight = `${minWeight} - ${maxWeight}`;
-  console.log(req.body);
+
   try {
-    const dogsDB = await getDatabaseDogs();
+    const dogsDB = await getDataBaseDogsHandler();
     let existDog = dogsDB.filter(
       (dog) => dog.name.toLowerCase() === name.toLowerCase()
     );
     if (existDog.length === 0) {
       const dog = await Dog.create({
         name,
-        picture,
+        breed_group,
+        image,
         height,
         weight,
         life_span,
       });
-      for (let temp of temps) {
+      for (let temp of temperament) {
         dog.addTemps(await Temperament.findOne({ where: { name: temp } }));
       }
       res.json({ can: dog, message: "El perro es de los nuestros" });
@@ -109,36 +102,35 @@ const postDog = async (req, res) => {
   }
 };
 
-const getTemperaments = async (res) => {
-  // >Obtiene todos los temperamentos existentes.
-  // >Estos deben ser obtenidos de la API
-  // (se evaluará que no haya hardcodeo).
-  // Luego de obtenerlos de la API,
-  //  deben ser guardados en la base de datos
-  // para su posterior consumo desde allí.
+//*INCOMPLETE
+const getTemperaments = async (req, res) => {
+  const temps = await getTempsHandler();
   try {
-    const temps = await getTemps();
-
-    for (let temperament of temps) {
-      await Temperament.findOrCreate({ where: { name: temperament } });
+ 
+    for (let temp of temps) {
+      await Temperament.findOrCreate({ where: { name: temp } });
     }
 
     const _temps = await Temperament.findAll();
-    console.log(_temps);
-    res.json(_temps);
+
+    res.status(201).json(_temps);
+
   } catch (error) {
-    res.send(error);
+    res.status(404).send(error);
   }
 };
 
-const getDataBase = async (res) => {
+//*COMPLETE
+const getDataBase = async (req, res) => {
   try {
-    const temps = await getDatabaseDogs();
-    res.send(temps);
+    const temps = await getDataBaseDogsHandler();
+    res.status(201).send(temps);
   } catch (error) {
-    res.send(error);
+    res.status(401).send(error);
   }
 };
+
+
 module.exports = {
   getDogs,
   getDetailByRace,
