@@ -62,16 +62,17 @@ const getCoincidencesByQuery = async (req, res) => {
 };
 
 //* CODING...
-const postDog = async (req, res) => {
+const createPostDog = async (req, res) => {
   let {
     name,
-    breed_group,
     image,
+    breed_group,
     minHeight,
     maxHeight,
     minWeight,
     maxWeight,
     life_span,
+    temperaments,
   } = req.body;
   let height = `${minHeight} - ${maxHeight}`;
   let weight = `${minWeight} - ${maxWeight}`;
@@ -81,24 +82,28 @@ const postDog = async (req, res) => {
     let existDog = dogsDB.filter(
       (dog) => dog.name.toLowerCase() === name.toLowerCase()
     );
-    if (existDog.length === 0) {
-      const dog = await Dog.create({
+    if (!existDog.length) {
+      const newPost = await Dog.create({
         name,
         breed_group,
         image,
         height,
         weight,
         life_span,
+        temperaments,
       });
-      for (let temp of temperament) {
-        dog.addTemps(await Temperament.findOne({ where: { name: temp } }));
+
+      for (let temp of temperaments) {
+        newPost.addTemperament(await Temperament.findOne({ where: { name: temp } }));
       }
-      res.json({ can: dog, message: "El perro es de los nuestros" });
+      res
+        .status(222)
+        .json({ dog: newPost, message: "El perro es de los nuestros" });
     } else {
-      res.json({ message: "Ya esta con nosotros" });
+      res.status(211).json({ message: "Ya esta con nosotros" });
     }
   } catch (error) {
-    res.send(error);
+    res.status(444).send(console.log(error));
   }
 };
 
@@ -106,7 +111,6 @@ const postDog = async (req, res) => {
 const getTemperaments = async (req, res) => {
   const temps = await getTempsHandler();
   try {
- 
     for (let temp of temps) {
       await Temperament.findOrCreate({ where: { name: temp } });
     }
@@ -114,7 +118,6 @@ const getTemperaments = async (req, res) => {
     const _temps = await Temperament.findAll();
 
     res.status(201).json(_temps);
-
   } catch (error) {
     res.status(404).send(error);
   }
@@ -130,12 +133,11 @@ const getDataBase = async (req, res) => {
   }
 };
 
-
 module.exports = {
   getDogs,
   getDetailByRace,
   getCoincidencesByQuery,
-  postDog,
+  createPostDog,
   getTemperaments,
   getDataBase,
 };

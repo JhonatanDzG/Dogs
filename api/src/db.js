@@ -25,17 +25,9 @@ fs.readdirSync(path.join(__dirname, "/models"))
     modelDefiners.push(require(path.join(__dirname, "/models", file)));
   });
 
-// console.log("01>> " + modelDefiners);
-// console.log(">> modelDefiners CREATED");
-
 // Injectamos la conexion (sequelize) a todos los modelos
 
 modelDefiners.forEach((model) => model(sequelize));
-
-// console.log("03>> " + modelDefiners);
-
-// Dog(sequelize);
-// Temperament(sequelize);
 
 // Capitalizamos los nombres de los modelos ie: product => Product
 let entries = Object.entries(sequelize.models);
@@ -51,7 +43,6 @@ const { Dog, Temperament } = sequelize.models;
 
 // Aca vendrian las relaciones
 // Product.hasMany(Reviews);
-
 
   Dog.belongsToMany(Temperament, { through: "DogTemps", timestamps: false });
   Temperament.belongsToMany(Dog, { through: "DogTemps", timestamps: false });

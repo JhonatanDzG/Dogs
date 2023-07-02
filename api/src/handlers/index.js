@@ -59,10 +59,13 @@ const getDataBaseDogsHandler = async () => {
           include: Temperament
       })
   } catch (error) {
-      console.log(error)
+      console.log(`ERROR getDataBaseDogsHandler: ${error}`)
   }
 }
 
+const postDogHandler = async () => {
+  
+}
 
 
 module.exports = {
@@ -71,4 +74,5 @@ module.exports = {
   breed_groupHandler,
   _getFullCans,
   getDataBaseDogsHandler,
+  postDogHandler,
 };
