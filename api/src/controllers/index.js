@@ -72,7 +72,7 @@ const createPostDog = async (req, res) => {
     minWeight,
     maxWeight,
     life_span,
-    temperament,
+    temperaments,
   } = req.body;
   let height = `${minHeight} - ${maxHeight}`;
   let weight = `${minWeight} - ${maxWeight}`;
@@ -82,25 +82,28 @@ const createPostDog = async (req, res) => {
     let existDog = dogsDB.filter(
       (dog) => dog.name.toLowerCase() === name.toLowerCase()
     );
-    if (existDog.length === 0) {
+    if (!existDog.length) {
       const newPost = await Dog.create({
         name,
         breed_group,
         image,
-        temperament,
         height,
         weight,
         life_span,
+        temperaments,
       });
-      for (let temp of temperament) {
-        newPost.addTemps(await Temperament.findOne({ where: { name: temp } }));
+
+      for (let temp of temperaments) {
+        newPost.addTemperament(await Temperament.findOne({ where: { name: temp } }));
       }
-      res.json({ can: newPost, message: "El perro es de los nuestros" });
+      res
+        .status(222)
+        .json({ dog: newPost, message: "El perro es de los nuestros" });
     } else {
-      res.json({ message: "Ya esta con nosotros" });
+      res.status(211).json({ message: "Ya esta con nosotros" });
     }
   } catch (error) {
-    res.status(444).send(error);
+    res.status(444).send(console.log(error));
   }
 };
 
@@ -111,7 +114,7 @@ const getTemperaments = async (req, res) => {
     for (let temp of temps) {
       await Temperament.findOrCreate({ where: { name: temp } });
     }
- 
+
     const _temps = await Temperament.findAll();
 
     res.status(201).json(_temps);
