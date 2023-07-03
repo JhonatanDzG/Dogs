@@ -4,7 +4,10 @@ const {
   getTempsHandler,
   _getFullCans,
   getDataBaseDogsHandler,
+  getDBDogs
 } = require("../handlers/index.js");
+
+
 
 const getDogs = async (req, res) => {
   const { name: breed_group } = req.query;
@@ -28,19 +31,19 @@ const getDogs = async (req, res) => {
 const getDetailByRace = async (req, res) => {
   const { idRaza } = req.params;
   try {
-    if (isNaN(idRaza)) {
+    if (idRaza) {
       const allCans = await _getFullCans();
-      const cans = allCans.filter((can) => can.breed_group == idRaza);
-      if (cans.length) {
-        res.status(222).send(cans);
+      const dogs = allCans.filter((dog) => dog.breed_group == idRaza);
+      if (dogs.length) {
+        res.status(222).send(dogs);
       } else {
-        res.stats(404).send("Dog is lost 😼");
+        res.status(404).send("Dog is lost 😼");
       }
     } else {
       res.status(201).send(`Buscar en DB id: ${idRaza}`);
     }
   } catch (error) {
-    res.status(405).send(error);
+    res.status(405).send("getDetailByRace " + error);
   }
 };
 
@@ -51,17 +54,24 @@ const getCoincidencesByQuery = async (req, res) => {
   try {
     if (name) {
       const allDogs = await _getFullCans();
-      const cans = allDogs.filter((can) => can.name == name);
-
-      if (cans) return res.json(cans);
-      res.stats(404).send("Can is lost");
+      console.log(allDogs);
+      const dogs = allDogs.filter((dog) =>
+        dog.name.toLowerCase().includes(name.toLowerCase())
+      );
+      if (!dogs.length) {
+        throw new Error("Esta raza no existe");
+      }
+      console.log(dogs);
+      return dogs;
+    }else{
+      res.status(411).send("No llegó se recibio el dato requerido (name) por query")
     }
   } catch (error) {
-    console.log(error);
+    res.status(412).send(console.log(error));
   }
 };
 
-//* CODING...
+//*COMPLETE
 const createPostDog = async (req, res) => {
   let {
     name,
@@ -78,7 +88,7 @@ const createPostDog = async (req, res) => {
   let weight = `${minWeight} - ${maxWeight}`;
 
   try {
-    const dogsDB = await getDataBaseDogsHandler();
+    const dogsDB = await _getFullCans();
     let existDog = dogsDB.filter(
       (dog) => dog.name.toLowerCase() === name.toLowerCase()
     );
@@ -94,7 +104,9 @@ const createPostDog = async (req, res) => {
       });
 
       for (let temp of temperaments) {
-        newPost.addTemperament(await Temperament.findOne({ where: { name: temp } }));
+        newPost.addTemperament(
+          await Temperament.findOne({ where: { name: temp } })
+        );
       }
       res
         .status(222)
@@ -107,7 +119,7 @@ const createPostDog = async (req, res) => {
   }
 };
 
-//*INCOMPLETE
+
 const getTemperaments = async (req, res) => {
   const temps = await getTempsHandler();
   try {
@@ -119,19 +131,22 @@ const getTemperaments = async (req, res) => {
 
     res.status(201).json(_temps);
   } catch (error) {
-    res.status(404).send(error);
+    res.status(402).send(console.log("getTemperaments: " + error));
   }
 };
 
 //*COMPLETE
 const getDataBase = async (req, res) => {
   try {
-    const temps = await getDataBaseDogsHandler();
+    const temps = await getDBDogs();
     res.status(201).send(temps);
   } catch (error) {
+    console.log(error)
     res.status(401).send(error);
   }
 };
+
+
 
 module.exports = {
   getDogs,

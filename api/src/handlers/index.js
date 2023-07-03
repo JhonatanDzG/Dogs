@@ -1,6 +1,6 @@
 const axios = require("axios");
 const { API_KEY } = process.env;
-const { Dog, Temperament } = require('../db.js');
+const { Dog, Temperament } = require("../db.js");
 const URL = "https://api.thedogapi.com/v1/breeds?api_key=";
 
 const getDogsHandler = async () => {
@@ -23,7 +23,7 @@ const getDogsHandler = async () => {
 const breed_groupHandler = async (res) => {
   const apiDogs = await axios(`${URL}${API_KEY}`);
   const dogs = apiDogs.data.map((dog) => ({
-    breed_group: dog.breed_group
+    breed_group: dog.breed_group,
   }));
   try {
     const breedGroupList = dogs.filter(
@@ -39,40 +39,53 @@ const breed_groupHandler = async (res) => {
 
 const getTempsHandler = async () => {
   let dogs = await getDogsHandler();
-  let temps = (dogs.filter(dog => dog.temperament)).map((dog=>(dog.temperament.split(', '))))
-  temps = new Set(temps.flat())
+  let temps = dogs
+    .filter((dog) => dog.temperament)
+    .map((dog) => dog.temperament.split(", "));
+  temps = new Set(temps.flat());
   return temps;
+};
+
+const getDBDogs = async () => {
+  //Informacion desde la DB
+  try {
+
+    return await Dog.findAll({
+      include: Temperament
+  })
+  } catch (error) {
+    console.log(error)
+  }
 };
 
 const _getFullCans = async () => {
   try {
-      const dogs = await getDogsHandler();
-      return [...dogs];
+    const dogsApi = await getDogsHandler();
+    const dogsDB = await getDBDogs();
+    return [...dogsApi, ...dogsDB];
   } catch (error) {
-      console.log(error)
+    console.log(`ERROR _getFullCans: ${error}`);
   }
-}
+};
 
 const getDataBaseDogsHandler = async () => {
   try {
-      return await Dog.findAll({
-          include: Temperament
-      })
+    return await Dog.findAll({
+      include: Temperament,
+    });
   } catch (error) {
-      console.log(`ERROR getDataBaseDogsHandler: ${error}`)
+    console.log(`ERROR getDataBaseDogsHandler: ${error}`);
   }
-}
+};
 
-const postDogHandler = async () => {
-  
-}
-
+const postDogHandler = async () => {};
 
 module.exports = {
   getDogsHandler,
-  getTempsHandler ,
+  getTempsHandler,
   breed_groupHandler,
   _getFullCans,
-  getDataBaseDogsHandler,
   postDogHandler,
+  getDataBaseDogsHandler,
+  getDBDogs,
 };
