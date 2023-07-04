@@ -38,7 +38,7 @@ const breed_groupHandler = async (res) => {
 };
 
 const getTempsHandler = async () => {
-  let dogs = await getDogsHandler();
+  let dogs = await _getFullCans();
   let temps = dogs
     .filter((dog) => dog.temperament)
     .map((dog) => dog.temperament.split(", "));
@@ -49,7 +49,6 @@ const getTempsHandler = async () => {
 const getDBDogs = async () => {
   //Informacion desde la DB
   try {
-
     return await Dog.findAll({
       include: Temperament
   })
@@ -58,6 +57,7 @@ const getDBDogs = async () => {
   }
 };
 
+// No trae los dogs de la DB 
 const _getFullCans = async () => {
   try {
     const dogsApi = await getDogsHandler();

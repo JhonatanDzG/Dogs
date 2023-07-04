@@ -17,13 +17,12 @@ const router = Router();
 // Ejemplo: router.use('/auth', authRouter);
 
 router
-  .get("/dbdogs", getDataBase)
-  .get("/dogs", getDogs)
-  .get("/dogs/:idRaza", getDetailByRace)
-  .get("/dogs/name/name?='...'", getCoincidencesByQuery)
-  .get("/temperaments", getTemperaments)
-  .post("/dog", createPostDog)
-  .get("/@a");
-  // .get("/dogs/name?='...'", getCoincidencesByQuery)
+.get("/dogs", getDogs)
+.get("/dogs/name?='...'", getCoincidencesByQuery)
+.get("/dogs/:idRaza", getDetailByRace)
+.post("/dog", createPostDog)
+.get("/temperaments", getTemperaments)
+.get("/db", getDataBase)
+// .get("/dogs/name?='...'", getCoincidencesByQuery)
 
 module.exports = router;

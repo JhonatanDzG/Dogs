@@ -4,10 +4,8 @@ const {
   getTempsHandler,
   _getFullCans,
   getDataBaseDogsHandler,
-  getDBDogs
+  getDBDogs,
 } = require("../handlers/index.js");
-
-
 
 const getDogs = async (req, res) => {
   const { name: breed_group } = req.query;
@@ -27,48 +25,45 @@ const getDogs = async (req, res) => {
   }
 };
 
-//* COMPLETED
+//* Revisar Consigna
 const getDetailByRace = async (req, res) => {
   const { idRaza } = req.params;
+  const allCans = await _getFullCans();
+
   try {
-    if (idRaza) {
-      const allCans = await _getFullCans();
-      const dogs = allCans.filter((dog) => dog.breed_group == idRaza);
-      if (dogs.length) {
-        res.status(222).send(dogs);
-      } else {
-        res.status(404).send("Dog is lost 😼");
-      }
-    } else {
-      res.status(201).send(`Buscar en DB id: ${idRaza}`);
-    }
+    // if (isNaN(idRaza)) {
+    //   const dogs = allCans.filter((dog) => dog.breed_group === idRaza);
+    //   res.status(212).send(dogs);
+    // } else {
+      const dogs = allCans.filter((dog) => dog.id == idRaza);
+      res.status(222).send(dogs);
+    // }
   } catch (error) {
-    res.status(405).send("getDetailByRace " + error);
+    res.status(444).send("getDetailByRace " + error);
   }
 };
 
 //* INCOMPLETE
 const getCoincidencesByQuery = async (req, res) => {
   const { name } = req.query;
+  const allDogs = await _getFullCans();
 
-  try {
-    if (name) {
-      const allDogs = await _getFullCans();
-      console.log(allDogs);
-      const dogs = allDogs.filter((dog) =>
-        dog.name.toLowerCase().includes(name.toLowerCase())
-      );
-      if (!dogs.length) {
-        throw new Error("Esta raza no existe");
-      }
-      console.log(dogs);
-      return dogs;
-    }else{
-      res.status(411).send("No llegó se recibio el dato requerido (name) por query")
-    }
-  } catch (error) {
-    res.status(412).send(console.log(error));
-  }
+ console.log( name);
+
+  // try {
+  //   const dogs = allDogs.filter((dog) =>
+  //     dog.name.toLowerCase().includes(name.toLowerCase())
+  //   );
+  //   if (!dogs.length) {
+  //     throw new Error("Esta raza no existe");
+  //   }else{
+
+  //     console.log(dogs);
+  //   }
+  //   return dogs;
+  // } catch (error) {
+  //   res.status(412).send(console.log(error));
+  // }
 };
 
 //*COMPLETE
@@ -112,16 +107,17 @@ const createPostDog = async (req, res) => {
         .status(222)
         .json({ dog: newPost, message: "El perro es de los nuestros" });
     } else {
-      res.status(211).json({ message: "Ya esta con nosotros" });
+      res.status(212).json({ message: "Ya esta con nosotros" });
     }
   } catch (error) {
     res.status(444).send(console.log(error));
   }
 };
 
-
 const getTemperaments = async (req, res) => {
+
   const temps = await getTempsHandler();
+
   try {
     for (let temp of temps) {
       await Temperament.findOrCreate({ where: { name: temp } });
@@ -141,12 +137,10 @@ const getDataBase = async (req, res) => {
     const temps = await getDBDogs();
     res.status(201).send(temps);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(401).send(error);
   }
 };
-
-
 
 module.exports = {
   getDogs,
