@@ -1,16 +1,14 @@
 const { Dog, Temperament } = require("../db");
 const {
-  getDogsHandler,
   getTempsHandler,
   _getFullCans,
-  getDataBaseDogsHandler,
   getDBDogs,
 } = require("../handlers/index.js");
 
 const getDogs = async (req, res) => {
   const { name: breed_group } = req.query;
   try {
-    const allDogs = await getDogsHandler();
+    const allDogs = await _getFullCans();
     if (breed_group) {
       const dogs = allDogs.filter(
         (dog) => dog.breed_group.toUpperCase() === breed_group.toUpperCase()
@@ -114,6 +112,7 @@ const createPostDog = async (req, res) => {
   }
 };
 
+//*COMPLETE
 const getTemperaments = async (req, res) => {
 
   const temps = await getTempsHandler();
