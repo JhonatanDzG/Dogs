@@ -5,23 +5,7 @@ const {
   getDBDogs,
 } = require("../handlers/index.js");
 
-const getDogs = async (req, res) => {
-  const { name: breed_group } = req.query;
-  try {
-    const allDogs = await _getFullCans();
-    if (breed_group) {
-      const dogs = allDogs.filter(
-        (dog) => dog.breed_group.toUpperCase() === breed_group.toUpperCase()
-      );
-      if (dogs.length > 0) return res.json(dogs);
-      res.status(404).send({ message: "breed_group Not Found" });
-    } else {
-      res.status(200).json(allDogs);
-    }
-  } catch (error) {
-    res.send(error);
-  }
-};
+
 
 //* Revisar Consigna
 const getDetailByRace = async (req, res) => {
@@ -40,6 +24,7 @@ const getDetailByRace = async (req, res) => {
     res.status(444).send("getDetailByRace " + error);
   }
 };
+
 
 //* INCOMPLETE
 const getCoincidencesByQuery = async (req, res) => {
@@ -64,7 +49,31 @@ const getCoincidencesByQuery = async (req, res) => {
   // }
 };
 
-//*COMPLETE
+
+
+
+
+
+//COMPLETE
+
+const getDogs = async (req, res) => {
+  const { name: breed_group } = req.query;
+  try {
+    const allDogs = await _getFullCans();
+    if (breed_group) {
+      const dogs = allDogs.filter(
+        (dog) => dog.breed_group.toUpperCase() === breed_group.toUpperCase()
+      );
+      if (dogs.length > 0) return res.json(dogs);
+      res.status(404).send({ message: "breed_group Not Found" });
+    } else {
+      res.status(200).json(allDogs);
+    }
+  } catch (error) {
+    res.send(error);
+  }
+};
+
 const createPostDog = async (req, res) => {
   let {
     name,
@@ -112,7 +121,6 @@ const createPostDog = async (req, res) => {
   }
 };
 
-//*COMPLETE
 const getTemperaments = async (req, res) => {
 
   const temps = await getTempsHandler();
@@ -130,7 +138,6 @@ const getTemperaments = async (req, res) => {
   }
 };
 
-//*COMPLETE
 const getDataBase = async (req, res) => {
   try {
     const temps = await getDBDogs();

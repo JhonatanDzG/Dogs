@@ -3,7 +3,11 @@ const { API_KEY } = process.env;
 const { Dog, Temperament } = require("../db.js");
 const URL = "https://api.thedogapi.com/v1/breeds?api_key=";
 
-//API Dogs.data
+
+
+
+//DONE
+
 const getDogsHandler = async () => {
   const apiDogs = await axios(`${URL}${API_KEY}`);
 
@@ -47,7 +51,6 @@ const getTempsHandler = async () => {
   return temps;
 };
 
-//Informacion desde la DB
 const getDBDogs = async () => {
   try {
     return await Dog.findAll({
@@ -58,7 +61,6 @@ const getDBDogs = async () => {
   }
 };
 
-//Trae los dogs de DB y API 
 const _getFullCans = async () => {
   try {
     const dogsDB = await getDBDogs();
@@ -69,15 +71,6 @@ const _getFullCans = async () => {
   }
 };
 
-const getDataBaseDogsHandler = async () => {
-  try {
-    return await Dog.findAll({
-      include: Temperament,
-    });
-  } catch (error) {
-    console.log(`ERROR getDataBaseDogsHandler: ${error}`);
-  }
-};
 
 const postDogHandler = async () => {};
 
