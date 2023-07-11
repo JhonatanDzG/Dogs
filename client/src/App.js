@@ -1,11 +1,18 @@
 import './CSS/App.css';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import LandingPage from './components/landingPage/LandingPage.jsx';
 
 function App() {
   return (
     <div className="App">
-      <h1>Henry Dogs</h1>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={< LandingPage />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
 
 export default App;
+
